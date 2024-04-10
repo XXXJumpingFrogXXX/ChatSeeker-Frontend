@@ -1,31 +1,77 @@
 <template>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap">
     <div class="totalBlock">
-        <div style="width: 100%; display: flex; flex-direction: column;">
-            <div class="topBar">
-                <p style="margin-top: 20px; color: var(--cpii-tool-store-dark-grey-4, #172B4D);" class="font-style">Chat Seeker</p>
-                <div style="display: flex; justify-content: flex-end; align-items: center; flex-shrink: 0;">
-                    <img :src="NKULogo" alt="NKU Logo"
-                    style="width: 55px; height: 55px; background: transparent">
-                </div>
+        <div style="width: 100%; display: flex; flex-direction: row;">
+
+            <div class="leftPart">
+              <div class="topBar">
+                  <p style="margin-top: 20px; color: var(--cpii-tool-store-dark-grey-4, #172B4D);" class="font-style">Chat Seeker</p>
+                  <div style="display: flex; justify-content: flex-end; align-items: center; flex-shrink: 0;">
+                      <img :src="NKULogo" alt="NKU Logo"
+                      style="width: 55px; height: 55px; background: transparent">
+                  </div>
+              </div>
+
+              <div class="chatWindow">
+                  <div class="message s-font-style" v-for="(message, index) in messages" :key="index" :class="{'user-message': message.isUser, 'bot-message': !message.isUser}">
+                      <div class="message-content">{{ message.text }}</div>
+                  </div>
+              </div>
+
+              <div class="inputArea">
+              <!-- <input v-model="userInput" @keyup.enter="sendMessage" placeholder="Type a message..." />
+              <button @click="sendMessage">Send</button> -->
+                  <img :src="CleanIcon" alt="Clean Logo" class="clean-icon" @click="scrollToRecord">
+                  <div class="input-send">
+                      <textarea v-model="userInput" class="input" :placeholder="placeholder"
+                      @keydown.enter.prevent="userQuestioning()"></textarea>
+                      <img :src="SendIcon" alt="Send Logo" class="sendBtn" @click="sendMessage()">
+                  </div>
+              </div>
             </div>
 
-            <div class="chatWindow">
-                <div class="message" v-for="(message, index) in messages" :key="index" :class="{'user-message': message.isUser, 'bot-message': !message.isUser}">
-                    <div class="message-content">{{ message.text }}</div>
+            <div class="rightPart">
+              <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: row; align-items: center;">
+                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">多轮对话</p>
+                <div class="toggle-switch" :class="{ 'active': this.isMulti }" @click="toggleMulti" style="margin-left: 10px; margin-top: 5px;">
+                  <div class="toggle-circle"></div>
                 </div>
+              </div>
+
+              <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: row; align-items: center;">
+                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">实时搜索</p>
+                <div class="toggle-switch" :class="{ 'active': this.isChecked }" @click="toggleCheck" style="margin-left: 10px; margin-top: 5px;">
+                  <div class="toggle-circle"></div>
+                </div>
+              </div>
+              <!-- <div v-if="this.isChecked" style="margin-top: 30px; width: 100%; display: flex; flex-direction: column;">
+                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">请为各搜索引擎的搜索内容分配权重：</p>
+                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
+                  Google</p>
+                <input v-model="this.temperature" class="input" style="width: 70%;">
+                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
+                  Bing</p>
+                <input v-model="this.temperature" class="input" style="width: 70%;">
+                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
+                  Baidu</p>
+                <input v-model="this.temperature" class="input" style="width: 70%;">
+                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
+                  Yahoo</p>
+                <input v-model="this.temperature" class="input" style="width: 70%;">
+                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
+                  DuckDuckGo</p>
+                <input v-model="this.temperature" class="input" style="width: 70%;">
+              </div> -->
+              <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: column;">
+                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
+                  Temperature</p>
+                <!-- <input v-model="this.temperature" class="input" style="width: 55px;"> -->
+              </div>
             </div>
 
-            <div class="inputArea">
-            <!-- <input v-model="userInput" @keyup.enter="sendMessage" placeholder="Type a message..." />
-            <button @click="sendMessage">Send</button> -->
-                <img :src="CleanIcon" alt="Clean Logo" class="clean-icon" @click="scrollToRecord">
-                <div class="input-send">
-                    <textarea v-model="userInput" class="input" :placeholder="placeholder"
-                    @keydown.enter.prevent="userQuestioning()"></textarea>
-                    <img :src="SendIcon" alt="Send Logo" class="sendBtn" @click="sendMessage()">
-                </div>
-            </div>
         </div>
     </div>
 </template>
@@ -46,9 +92,23 @@ export default {
         CleanIcon,
         SendIcon,
         placeholder: 'Type a message...',
+        isChecked: false,
+        isMulti: false,
+        temperature: 0,
       }
     },
-
+    methods: {
+      toggleMulti() {
+        this.isMulti = !this.isMulti;
+        // Emit an event if you want to notify parent components of the change
+        this.$emit('change', this.isMulti);
+      },
+      toggleCheck() {
+        this.isChecked = !this.isChecked;
+        // Emit an event if you want to notify parent components of the change
+        this.$emit('change', this.isChecked);
+      },
+    },
     setup() {
       const userInput = ref('');
       const messages = ref([]);
@@ -60,7 +120,7 @@ export default {
           
           // Simulate bot response
           setTimeout(() => {
-            messages.value.push({ text: 'Yes!', isUser: false });
+            messages.value.push({ text: 'Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!', isUser: false });
           }, 500);
   
           // Reset input field
@@ -94,6 +154,69 @@ export default {
     background: var(--cpii-tool-store-grey-1, #FAFBFD);
 }
 
+.leftPart{
+  width: 80%; 
+  display: flex; 
+  flex-direction: column;
+}
+
+.rightPart{
+  width: 20%; 
+  display: flex; 
+  flex-direction: column;
+  border-left: 1px solid #DFE1E6;
+  background: #F6F7F8;
+
+  .toggle-switch {
+    display: flex;
+    align-items: center;
+    width: 60px; /* Width of the long bar */
+    height: 25px; /* Height of the long bar */
+    background-color: #ccc; /* Grey background */
+    border-radius: 15px; /* Half of the height to make it round */
+    cursor: pointer;
+    transition: background-color 0.2s; /* Smooth transition for background color */
+    position: relative;
+  }
+
+  .toggle-circle {
+    width: 25px; /* Width of the circle */
+    height: 25px; /* Height of the circle */
+    background-color: white;
+    border-radius: 50%; /* Fully round shape */
+    transition: transform 0.2s; /* Smooth transition for moving the circle */
+    position: absolute;
+    left: 0; /* Start from the left side */
+  }
+
+  .toggle-switch.active {
+    background-color: #4CAF50; /* Green background for active state */
+  }
+
+  .toggle-switch.active .toggle-circle {
+    transform: translateX(35px); /* Move the circle to the right; (100px - 30px) */
+  }
+
+  .input {
+    display: flex;
+    width: 100%;
+    padding: 10px 20px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+    align-self: stretch;
+    border-radius: 15px;
+    background: var(--cpii-tool-store-grey-2, #F6F7F8) !important;
+    border: #F6F7F8;
+  }
+
+  .input:focus {
+    background: white !important;
+  }
+
+}
+
 .chatWindow {
     box-sizing: border-box; /* 确保内边距不会增加总宽度 */
     flex-grow: 1;
@@ -108,25 +231,36 @@ export default {
     margin-bottom: 10px;
 
     .message {
-        max-width: 50%;
-        margin-bottom: 10px;
-        padding: 10px;
-        border-radius: 20px;
+      max-width: 200px;
+      width: fit-content;
+      margin-bottom: 10px;
+      border-radius: 15px;
+      display: flex;
+      gap: 10px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      flex-direction: column;
     }
-  
+
     .user-message {
-        margin-left: auto;
-        width: 50px;
-        background-color: #dcf8c6;
+      margin-left: auto;
+      background-color: var(--color-brand, #0052CC);
+      padding: 10px 20px;
+      color: var(--color-white, #FFF);
+      align-self: flex-end;
     }
     
     .bot-message {
-        background-color: #ffffff;
-        width: 100px;
+      background-color: var(--color-light-grey2, #EBECF0);;
+      padding: 16px 20px;
+      color: #172B4D;
+      align-self: flex-start;
     }
     
     .message-content {
-        word-wrap: break-word;
+      max-width: 100%;
+      word-wrap: break-word;
+      overflow-wrap: break-word; /* Ensures breaking of long words and overflow */
     }
   }
 
@@ -179,15 +313,30 @@ export default {
     }
 }
 
-
-
-
 .font-style {
-    font-family: Inter;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 28px;
-    letter-spacing: 0.72px;
+  font-family: Inter;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0.72px;
+}
+.s-font-style {
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0.32px;
+}
+.noto-serif-sc-regular {
+  font-family: "Noto Serif SC", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.ma-shan-zheng-regular {
+  font-family: "Ma Shan Zheng", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 </style>
