@@ -8,7 +8,7 @@ const requestConfig = {
         }
     },
     // for Production server
-    baseURL: 'http://127.0.0.1/chatseeker-backend',
+    baseURL: 'http://127.0.0.1/chat-seeker-backend',
     // Normal Setting
     basePath: '/',
 }
@@ -29,7 +29,7 @@ const request = function (
     //       message: response.data.response,
     //     });
     //   }
-    //   return response;
+      return response;
     },
     function (error) {
       return Promise.reject(error);

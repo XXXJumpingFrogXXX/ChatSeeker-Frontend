@@ -26,8 +26,10 @@
               <button @click="sendMessage">Send</button> -->
                   <img :src="CleanIcon" alt="Clean Logo" class="clean-icon" @click="scrollToRecord">
                   <div class="input-send">
-                      <textarea v-model="userInput" class="input" :placeholder="placeholder"
-                      @keydown.enter.prevent="userQuestioning()"></textarea>
+                      <!-- <textarea v-model="userInput" class="input" :placeholder="placeholder"
+                      @keydown.enter.prevent="generate()"></textarea> -->
+                      <textarea v-model="this.query" class="input" :placeholder="placeholder"
+                      @keydown.enter.prevent="generate()"></textarea>
                       <img :src="SendIcon" alt="Send Logo" class="sendBtn" @click="sendMessage()">
                   </div>
               </div>
@@ -70,6 +72,9 @@
                   Temperature</p>
                 <!-- <input v-model="this.temperature" class="input" style="width: 55px;"> -->
               </div>
+              <div>
+                <textarea v-model="this.testReply"></textarea>
+              </div>
             </div>
 
         </div>
@@ -94,6 +99,8 @@ export default {
         placeholder: 'Type a message...',
         isChecked: false,
         isMulti: false,
+        query: '',
+        testReply: '',
         temperature: 0,
       }
     },
@@ -108,6 +115,29 @@ export default {
         // Emit an event if you want to notify parent components of the change
         this.$emit('change', this.isChecked);
       },
+      async generate(){
+        await fetch(`https://127.0.0.1/chat-seeker-backend/text_gen/generate_not_real_time_answer?query=${this.query}`).then(response => {
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          const that = this;
+
+          that.$toast({ message: 'Response generating...', position: "top" });
+
+          function processChunk({ done, value }) {
+            if (done) {
+              console.log('Stream complete');
+              that.query = "";
+              return;
+            }
+
+            const chunk = decoder.decode(value, { stream: true });
+            that.testReply += chunk;
+          
+            reader.read().then(processChunk);
+          }
+          reader.read().then(processChunk);
+        })
+      }, 
     },
     setup() {
       const userInput = ref('');
