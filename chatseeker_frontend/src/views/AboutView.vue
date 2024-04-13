@@ -16,36 +16,42 @@
               </div>
 
               <div class="chatWindow">
-                  <div class="message s-font-style" v-for="(message, index) in messages" :key="index" :class="{'user-message': message.isUser, 'bot-message': !message.isUser}">
+                  <div class="message s-font-style" v-for="(message, index) in this.messages" :key="index" :class="{'user-message': message.isUser, 'bot-message': !message.isUser}">
                       <div class="message-content">{{ message.text }}</div>
+                  </div>
+                  <div v-if="this.isStreamingGenerated" class="message s-font-style bot-message">
+                    <div class="message-content">{{ this.streamingReply }}</div>
                   </div>
               </div>
 
               <div class="inputArea">
-              <!-- <input v-model="userInput" @keyup.enter="sendMessage" placeholder="Type a message..." />
-              <button @click="sendMessage">Send</button> -->
                   <img :src="CleanIcon" alt="Clean Logo" class="clean-icon" @click="scrollToRecord">
                   <div class="input-send">
-                      <!-- <textarea v-model="userInput" class="input" :placeholder="placeholder"
-                      @keydown.enter.prevent="generate()"></textarea> -->
                       <textarea v-model="this.query" class="input" :placeholder="placeholder"
                       @keydown.enter.prevent="generate()"></textarea>
-                      <img :src="SendIcon" alt="Send Logo" class="sendBtn" @click="sendMessage()">
+                      <img :src="SendIcon" alt="Send Logo" class="sendBtn" @click="generate()">
                   </div>
               </div>
             </div>
 
             <div class="rightPart">
               <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: row; align-items: center;">
-                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">多轮对话</p>
+                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">Multi-turn Dialog | 多轮对话</p>
                 <div class="toggle-switch" :class="{ 'active': this.isMulti }" @click="toggleMulti" style="margin-left: 10px; margin-top: 5px;">
                   <div class="toggle-circle"></div>
                 </div>
               </div>
 
               <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: row; align-items: center;">
-                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">实时搜索</p>
-                <div class="toggle-switch" :class="{ 'active': this.isChecked }" @click="toggleCheck" style="margin-left: 10px; margin-top: 5px;">
+                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">Real-time Search | 实时搜索</p>
+                <div class="toggle-switch" :class="{ 'active': this.isRealTime }" @click="toggleRealTime" style="margin-left: 10px; margin-top: 5px;">
+                  <div class="toggle-circle"></div>
+                </div>
+              </div>
+
+              <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: row; align-items: center;">
+                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">Streaming Response | 流式输出</p>
+                <div class="toggle-switch" :class="{ 'active': this.isStreaming }" @click="toggleStreaming" style="margin-left: 10px; margin-top: 5px;">
                   <div class="toggle-circle"></div>
                 </div>
               </div>
@@ -82,7 +88,8 @@
 </template>
   
 <script>
-import { ref } from 'vue';
+// import { ref } from 'vue';
+import { request } from "../js/requestConfig";
 import NKULogo from "@/assets/img/NKU_Logo.png";
 import CleanIcon from "@/assets/img/clean_icon.svg";
 import SendIcon from "@/assets/img/send_icon.svg";
@@ -96,69 +103,73 @@ export default {
         NKULogo,
         CleanIcon,
         SendIcon,
+        messages: [],
         placeholder: 'Type a message...',
-        isChecked: false,
+        isRealTime: false,
+        isStreaming: false,
+        isStreamingGenerated: false,
         isMulti: false,
         query: '',
-        testReply: '',
+        streamingReply: '',
         temperature: 0,
       }
     },
+
     methods: {
       toggleMulti() {
         this.isMulti = !this.isMulti;
-        // Emit an event if you want to notify parent components of the change
         this.$emit('change', this.isMulti);
       },
-      toggleCheck() {
-        this.isChecked = !this.isChecked;
-        // Emit an event if you want to notify parent components of the change
-        this.$emit('change', this.isChecked);
+      toggleStreaming() {
+        this.isStreaming = !this.isStreaming;
+        this.$emit('change', this.isStreaming);
+      },
+      toggleRealTime() {
+        this.isRealTime = !this.isRealTime;
+        this.$emit('change', this.isRealTime);
       },
       async generate(){
-        await fetch(`https://127.0.0.1/chat-seeker-backend/text_gen/generate_not_real_time_answer?query=${this.query}`).then(response => {
-          const reader = response.body.getReader();
-          const decoder = new TextDecoder();
-          const that = this;
+        this.messages.push({ text: this.query, isUser: true });
 
-          that.$toast({ message: 'Response generating...', position: "top" });
-
-          function processChunk({ done, value }) {
-            if (done) {
-              console.log('Stream complete');
-              that.query = "";
+        if(!this.isRealTime && !this.isStreaming){
+          await request('post', '/text_gen/generate_not_real_time_answer', {}, {
+            query: this.query
+          }).then(async (res) => {
+            if (res.data.success) {
+              this.testReply = res.data.response.result;
+              this.query="";
+              return;
+            } else {
               return;
             }
-
-            const chunk = decoder.decode(value, { stream: true });
-            that.testReply += chunk;
-          
-            reader.read().then(processChunk);
-          }
-          reader.read().then(processChunk);
-        })
-      }, 
-    },
-    setup() {
-      const userInput = ref('');
-      const messages = ref([]);
-  
-      const sendMessage = () => {
-        if (userInput.value.trim() !== '') {
-          // Add user message
-          messages.value.push({ text: userInput.value, isUser: true });
-          
-          // Simulate bot response
-          setTimeout(() => {
-            messages.value.push({ text: 'Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!Yes!', isUser: false });
-          }, 500);
-  
-          // Reset input field
-          userInput.value = '';
+          })
         }
-      };
-  
-      return { userInput, messages, sendMessage };
+
+        if(!this.isRealTime && this.isStreaming){
+          this.isStreamingGenerated = true;
+          await fetch(`http://127.0.0.1/chat-seeker-backend/text_gen/generate_not_real_time_answer_streaming?query=${this.query}`).then(response => {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            const that = this;
+            that.query = "";
+            function processChunk({ done, value }) {
+              if (done) {
+                console.log('Stream complete');
+                that.messages.push({ text: that.streamingReply, isUser: false });
+                that.streamingReply = "";
+                that.isStreamingGenerated = false;
+                return;
+              }
+
+              const chunk = decoder.decode(value, { stream: true });
+              that.streamingReply += chunk;
+              reader.read().then(processChunk);
+            }
+            reader.read().then(processChunk);
+          })
+        }
+
+      },
     },
 };
 </script>
