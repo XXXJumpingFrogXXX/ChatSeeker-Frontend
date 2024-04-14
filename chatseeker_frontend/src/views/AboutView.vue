@@ -35,51 +35,101 @@
             </div>
 
             <div class="rightPart">
-              <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: row; align-items: center;">
-                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">Multi-turn Dialog | 多轮对话</p>
-                <div class="toggle-switch" :class="{ 'active': this.isMulti }" @click="toggleMulti" style="margin-left: 10px; margin-top: 5px;">
-                  <div class="toggle-circle"></div>
+              <p class="noto-serif-sc-regular" style="font-size: 28px; margin-left: 20px; margin-top: 20px;">Chat Seeker Settings</p>
+              <div style="margin-top: 20px; width: 100%; display: flex; flex-direction: row; align-items: center;">
+                <div style="width: 50%; display: flex; flex-direction: row; align-items: center;">
+                  <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">多轮对话</p>
+                  <div class="toggle-switch" :class="{ 'active': this.isMulti }" @click="toggleMulti" style="margin-left: 10px; margin-top: 5px;">
+                    <div class="toggle-circle"></div>
+                  </div>
+                </div>
+
+                <div style="width: 50%; display: flex; flex-direction: row; align-items: center;">
+                  <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 20px; margin-right: 0;">流式输出</p>
+                  <div class="toggle-switch" :class="{ 'active': this.isStreaming }" @click="toggleStreaming" style="margin-left: 10px; margin-top: 5px;">
+                    <div class="toggle-circle"></div>
+                  </div>
                 </div>
               </div>
-
-              <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: row; align-items: center;">
-                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">Real-time Search | 实时搜索</p>
+              
+              <div style="margin-top: 50px; width: 100%; display: flex; flex-direction: row; align-items: center;">
+                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">实时搜索</p>
                 <div class="toggle-switch" :class="{ 'active': this.isRealTime }" @click="toggleRealTime" style="margin-left: 10px; margin-top: 5px;">
                   <div class="toggle-circle"></div>
                 </div>
               </div>
 
-              <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: row; align-items: center;">
-                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">Streaming Response | 流式输出</p>
-                <div class="toggle-switch" :class="{ 'active': this.isStreaming }" @click="toggleStreaming" style="margin-left: 10px; margin-top: 5px;">
-                  <div class="toggle-circle"></div>
+              <div v-if="this.isRealTime" style="margin-top: 30px; width: 100%; display: flex; flex-direction: column;">
+                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">实时搜索设置：</p>
+
+                <div class="searchEngineBox">
+                  <div style="display: flex; flex-direction: row;">
+                    <img :src="GoogleLogo" alt="Google Logo"
+                      style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
+                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 130px;" class="font-style">Google</p>
+                    <div class="search-control" style="margin-top: -15px;">
+                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="googlePower">
+                      <span class="search-value s-font-style">{{ googlePower }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="searchEngineBox">
+                  <div style="display: flex; flex-direction: row;">
+                    <img :src="BingLogo" alt="Bing Logo"
+                      style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
+                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 130px;" class="font-style">Bing</p>
+                    <div class="search-control" style="margin-top: -15px;">
+                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="bingPower">
+                      <span class="search-value s-font-style">{{ bingPower }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="searchEngineBox">
+                  <div style="display: flex; flex-direction: row;">
+                    <img :src="BaiduLogo" alt="Baidu Logo"
+                      style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
+                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 130px;" class="font-style">Baidu</p>
+                    <div class="search-control" style="margin-top: -15px;">
+                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="baiduPower">
+                      <span class="search-value s-font-style">{{ baiduPower }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="searchEngineBox">
+                  <div style="display: flex; flex-direction: row;">
+                    <img :src="YahooLogo" alt="Yahoo Logo"
+                      style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
+                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 130px;" class="font-style">Yahoo</p>
+                    <div class="search-control" style="margin-top: -15px;">
+                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="yahooPower">
+                      <span class="search-value s-font-style">{{ yahooPower }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="searchEngineBox">
+                  <div style="display: flex; flex-direction: row;">
+                    <img :src="DuckDuckGoLogo" alt="DuckDuckGo Logo"
+                      style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
+                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 130px;" class="font-style">DDG</p>
+                    <div class="search-control" style="margin-top: -15px;">
+                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="ddgPower">
+                      <input class="search-value s-font-style" style="width: 10px;" v-model="ddgPower">
+                    </div>
+                  </div>
                 </div>
               </div>
-              <!-- <div v-if="this.isChecked" style="margin-top: 30px; width: 100%; display: flex; flex-direction: column;">
-                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">请为各搜索引擎的搜索内容分配权重：</p>
-                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
-                  Google</p>
-                <input v-model="this.temperature" class="input" style="width: 70%;">
-                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
-                  Bing</p>
-                <input v-model="this.temperature" class="input" style="width: 70%;">
-                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
-                  Baidu</p>
-                <input v-model="this.temperature" class="input" style="width: 70%;">
-                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
-                  Yahoo</p>
-                <input v-model="this.temperature" class="input" style="width: 70%;">
-                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
-                  DuckDuckGo</p>
-                <input v-model="this.temperature" class="input" style="width: 70%;">
-              </div> -->
+
               <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: column;">
-                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px;" class="font-style">
+                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px; margin-left: 40px;" class="font-style">
                   Temperature</p>
-                <!-- <input v-model="this.temperature" class="input" style="width: 55px;"> -->
-              </div>
-              <div>
-                <textarea v-model="this.testReply"></textarea>
+                <div class="temperature-control">
+                  <input class="temperature-slider" type="range" min="0" max="1" step="0.01" v-model="temperature">
+                  <span class="temperature-value font-style">{{ temperature }}</span>
+                </div>
               </div>
             </div>
 
@@ -93,8 +143,12 @@ import { request } from "../js/requestConfig";
 import NKULogo from "@/assets/img/NKU_Logo.png";
 import CleanIcon from "@/assets/img/clean_icon.svg";
 import SendIcon from "@/assets/img/send_icon.svg";
-  
-  
+import GoogleLogo from "@/assets/img/Google_Logo.png";
+import BingLogo from "@/assets/img/Bing_Logo.png";
+import BaiduLogo from "@/assets/img/Baidu_Logo.png";
+import YahooLogo from "@/assets/img/Yahoo_Logo.png";
+import DuckDuckGoLogo from "@/assets/img/DuckDuckGo_Logo.png";
+
 export default {
     name: "ChatSeeker",
   
@@ -103,6 +157,11 @@ export default {
         NKULogo,
         CleanIcon,
         SendIcon,
+        GoogleLogo,
+        BingLogo,
+        BaiduLogo,
+        YahooLogo,
+        DuckDuckGoLogo,
         messages: [],
         placeholder: 'Type a message...',
         isRealTime: false,
@@ -111,7 +170,12 @@ export default {
         isMulti: false,
         query: '',
         streamingReply: '',
-        temperature: 0,
+        temperature: 0.5,
+        googlePower: 0,
+        bingPower: 0,
+        baiduPower: 0,
+        yahooPower: 0,
+        ddgPower: 0,
       }
     },
 
@@ -351,6 +415,103 @@ export default {
         width: 34px;
         height: 28px;
       }
+    }
+}
+
+.searchEngineBox{
+  display: flex;
+  flex-direction: column;
+  padding-left: 45px;
+  padding-top: 15px;
+}
+
+.search-control {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+
+    .search-slider {
+        width: 30%;
+        height: 8px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: #ddd;
+        outline: none;
+        border-radius: 4px;
+        margin: 0 30px;
+        margin-right: 30px;
+    }
+
+    .search-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #0056b3;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .search-slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background-color: #0056b3;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .search-value {
+        min-width: 50px;
+    }
+}
+
+.temperature-control {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+
+    .temperature-slider {
+        width: 60%;
+        height: 8px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: #ddd;
+        outline: none;
+        border-radius: 4px;
+        margin: 0 30px;
+        margin-right: 30px;
+    }
+
+    .temperature-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #0056b3;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .temperature-slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background-color: #0056b3;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .temperature-value {
+        min-width: 50px;
     }
 }
 
