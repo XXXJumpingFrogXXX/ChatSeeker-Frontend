@@ -35,8 +35,8 @@
             </div>
 
             <div class="rightPart">
-              <p class="noto-serif-sc-regular" style="font-size: 28px; margin-left: 20px; margin-top: 20px;">Chat Seeker Settings</p>
-              <div style="margin-top: 20px; width: 100%; display: flex; flex-direction: row; align-items: center;">
+              <p class="noto-serif-sc-regular" style="font-size: 28px; margin-left: 20px; margin-top: 15px;">聊天机器人设置</p>
+              <div style="margin-top: 10px; width: 100%; display: flex; flex-direction: row; align-items: center;">
                 <div style="width: 50%; display: flex; flex-direction: row; align-items: center;">
                   <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">多轮对话</p>
                   <div class="toggle-switch" :class="{ 'active': this.isMulti }" @click="toggleMulti" style="margin-left: 10px; margin-top: 5px;">
@@ -60,16 +60,16 @@
               </div>
 
               <div v-if="this.isRealTime" style="margin-top: 30px; width: 100%; display: flex; flex-direction: column;">
-                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">实时搜索设置：</p>
+                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">实时搜索权重分配</p>
 
                 <div class="searchEngineBox">
                   <div style="display: flex; flex-direction: row;">
                     <img :src="GoogleLogo" alt="Google Logo"
                       style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
-                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 130px;" class="font-style">Google</p>
+                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 80px;" class="font-style">Google</p>
                     <div class="search-control" style="margin-top: -15px;">
                       <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="googlePower">
-                      <span class="search-value s-font-style">{{ googlePower }}</span>
+                      <input class="search-value s-font-style" v-model="googlePower">
                     </div>
                   </div>
                 </div>
@@ -78,10 +78,10 @@
                   <div style="display: flex; flex-direction: row;">
                     <img :src="BingLogo" alt="Bing Logo"
                       style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
-                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 130px;" class="font-style">Bing</p>
+                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 80px;" class="font-style">Bing</p>
                     <div class="search-control" style="margin-top: -15px;">
                       <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="bingPower">
-                      <span class="search-value s-font-style">{{ bingPower }}</span>
+                      <input class="search-value s-font-style" v-model="bingPower">
                     </div>
                   </div>
                 </div>
@@ -90,10 +90,10 @@
                   <div style="display: flex; flex-direction: row;">
                     <img :src="BaiduLogo" alt="Baidu Logo"
                       style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
-                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 130px;" class="font-style">Baidu</p>
+                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 80px;" class="font-style">Baidu</p>
                     <div class="search-control" style="margin-top: -15px;">
                       <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="baiduPower">
-                      <span class="search-value s-font-style">{{ baiduPower }}</span>
+                      <input class="search-value s-font-style" v-model="baiduPower">
                     </div>
                   </div>
                 </div>
@@ -102,10 +102,10 @@
                   <div style="display: flex; flex-direction: row;">
                     <img :src="YahooLogo" alt="Yahoo Logo"
                       style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
-                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 130px;" class="font-style">Yahoo</p>
+                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 80px;" class="font-style">Yahoo</p>
                     <div class="search-control" style="margin-top: -15px;">
                       <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="yahooPower">
-                      <span class="search-value s-font-style">{{ yahooPower }}</span>
+                      <input class="search-value s-font-style" v-model="yahooPower">
                     </div>
                   </div>
                 </div>
@@ -114,16 +114,16 @@
                   <div style="display: flex; flex-direction: row;">
                     <img :src="DuckDuckGoLogo" alt="DuckDuckGo Logo"
                       style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
-                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 130px;" class="font-style">DDG</p>
+                    <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 80px;" class="font-style">DDG</p>
                     <div class="search-control" style="margin-top: -15px;">
                       <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="ddgPower">
-                      <input class="search-value s-font-style" style="width: 10px;" v-model="ddgPower">
+                      <input class="search-value s-font-style" v-model="ddgPower">
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div style="margin-top: 30px; width: 100%; display: flex; flex-direction: column;">
+              <div style="margin-top: 20px; width: 100%; display: flex; flex-direction: column;">
                 <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px; margin-left: 40px;" class="font-style">
                   Temperature</p>
                 <div class="temperature-control">
@@ -131,8 +131,16 @@
                   <span class="temperature-value font-style">{{ temperature }}</span>
                 </div>
               </div>
-            </div>
 
+              <div style="margin-top: 15px; width: 100%; display: flex; flex-direction: column;">
+                <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px; margin-left: 40px;" class="font-style">
+                  Top_p</p>
+                <div class="temperature-control">
+                  <input class="temperature-slider" type="range" min="0" max="1" step="0.01" v-model="topp">
+                  <span class="temperature-value font-style">{{ topp }}</span>
+                </div>
+              </div>
+            </div>
         </div>
     </div>
 </template>
@@ -171,6 +179,7 @@ export default {
         query: '',
         streamingReply: '',
         temperature: 0.5,
+        topp: 0.5,
         googlePower: 0,
         bingPower: 0,
         baiduPower: 0,
@@ -464,10 +473,20 @@ export default {
         border-radius: 50%;
         cursor: pointer;
     }
+}
 
-    .search-value {
-        min-width: 50px;
-    }
+.search-value {
+    width: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    align-self: stretch;
+    padding: 10px 20px;
+    gap: 16px;
+    border-radius: 15px;
+    background: var(--cpii-tool-store-grey-2, #F6F7F8) !important;
+    border: var(--cpii-tool-store-grey-2, #F6F7F8) !important;
 }
 
 .temperature-control {
