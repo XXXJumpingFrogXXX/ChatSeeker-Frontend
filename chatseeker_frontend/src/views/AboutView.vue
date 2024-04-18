@@ -17,7 +17,13 @@
 
               <div class="chatWindow">
                   <div class="message s-font-style" v-for="(message, index) in this.messages" :key="index" :class="{'user-message': message.isUser, 'bot-message': !message.isUser}">
-                      <div class="message-content">{{ message.text }}</div>
+                    <div class="message-content">{{ message.text }}</div>
+                    <div v-if="message.ref_list && message.ref_list.length > 0">
+                        <a v-for="(link, linkIndex) in message.ref_list" :key="linkIndex" :href="link" target="_blank" rel="noopener noreferrer">{{ link }}</a>
+                    </div>
+                  </div>
+                  <div v-if="this.isGenerating" class="message s-font-style bot-message">
+                    <div class="message-content">正在思考...</div>
                   </div>
                   <div v-if="this.isStreamingGenerated" class="message s-font-style bot-message">
                     <div class="message-content">{{ this.streamingReply }}</div>
@@ -68,8 +74,8 @@
                       style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
                     <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 80px;" class="font-style">Google</p>
                     <div class="search-control" style="margin-top: -15px;">
-                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="googlePower">
-                      <input class="search-value s-font-style" v-model="googlePower">
+                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model.number="googlePower">
+                      <input class="search-value s-font-style" v-model.number="googlePower">
                     </div>
                   </div>
                 </div>
@@ -80,8 +86,8 @@
                       style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
                     <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 80px;" class="font-style">Bing</p>
                     <div class="search-control" style="margin-top: -15px;">
-                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="bingPower">
-                      <input class="search-value s-font-style" v-model="bingPower">
+                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model.number="bingPower">
+                      <input class="search-value s-font-style" v-model.number="bingPower">
                     </div>
                   </div>
                 </div>
@@ -92,8 +98,8 @@
                       style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
                     <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 80px;" class="font-style">Baidu</p>
                     <div class="search-control" style="margin-top: -15px;">
-                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="baiduPower">
-                      <input class="search-value s-font-style" v-model="baiduPower">
+                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model.number="baiduPower">
+                      <input class="search-value s-font-style" v-model.number="baiduPower">
                     </div>
                   </div>
                 </div>
@@ -104,8 +110,8 @@
                       style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
                     <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 80px;" class="font-style">Yahoo</p>
                     <div class="search-control" style="margin-top: -15px;">
-                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="yahooPower">
-                      <input class="search-value s-font-style" v-model="yahooPower">
+                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model.number="yahooPower">
+                      <input class="search-value s-font-style" v-model.number="yahooPower">
                     </div>
                   </div>
                 </div>
@@ -116,8 +122,8 @@
                       style="width: 25px; height: 25px; margin-top: 2px; background: transparent">
                     <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-left: 10px; margin-top: 0px; width: 80px;" class="font-style">DDG</p>
                     <div class="search-control" style="margin-top: -15px;">
-                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model="ddgPower">
-                      <input class="search-value s-font-style" v-model="ddgPower">
+                      <input class="search-slider" type="range" min="0" max="1" step="0.01" v-model.number="ddgPower">
+                      <input class="search-value s-font-style" v-model.number="ddgPower">
                     </div>
                   </div>
                 </div>
@@ -176,6 +182,7 @@ export default {
         isStreaming: false,
         isStreamingGenerated: false,
         isMulti: false,
+        isGenerating: false,
         query: '',
         streamingReply: '',
         temperature: 0.5,
@@ -202,15 +209,30 @@ export default {
         this.$emit('change', this.isRealTime);
       },
       async generate(){
+        if(this.isRealTime){
+          const total = this.googlePower + this.bingPower + this.baiduPower + this.yahooPower + this.ddgPower;
+          if (total !== 1) {
+              alert("请你仔细阅读使用事项，各搜索引擎权重总和必须为1！");
+              return;
+          }
+          const zeros = [this.googlePower, this.bingPower, this.baiduPower, this.yahooPower, this.ddgPower].filter(weight => weight === 0).length;
+          if (zeros < 2) {
+              alert("请你仔细阅读使用事项，一次最多只能使用三个搜索引擎，请至少设置两个权重参数为0!");
+          }
+        }
+
         this.messages.push({ text: this.query, isUser: true });
+        const temporaryQuery = this.query;
+        this.query = "";
 
         if(!this.isRealTime && !this.isStreaming){
+          this.isGenerating = true;
           await request('post', '/text_gen/generate_not_real_time_answer', {}, {
-            query: this.query
+            query: temporaryQuery
           }).then(async (res) => {
             if (res.data.success) {
-              this.testReply = res.data.response.result;
-              this.query="";
+              this.isGenerating = false;
+              this.messages.push({ text: res.data.response.result, ref_list: [], isUser: false });
               return;
             } else {
               return;
@@ -218,16 +240,15 @@ export default {
           })
         }
 
-        if(!this.isRealTime && this.isStreaming){
+        else if(!this.isRealTime && this.isStreaming){
           this.isStreamingGenerated = true;
-          await fetch(`http://127.0.0.1/chat-seeker-backend/text_gen/generate_not_real_time_answer_streaming?query=${this.query}`).then(response => {
+          await fetch(`http://127.0.0.1/chat-seeker-backend/text_gen/generate_not_real_time_answer_streaming?query=${temporaryQuery}`).then(response => {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             const that = this;
             that.query = "";
             function processChunk({ done, value }) {
               if (done) {
-                console.log('Stream complete');
                 that.messages.push({ text: that.streamingReply, isUser: false });
                 that.streamingReply = "";
                 that.isStreamingGenerated = false;
@@ -239,6 +260,26 @@ export default {
               reader.read().then(processChunk);
             }
             reader.read().then(processChunk);
+          })
+        }
+
+        else if(this.isRealTime && !this.isStreaming){
+          this.isGenerating = true;
+          await request('post', '/text_gen/generate_real_time_answer', {}, {
+            query: temporaryQuery,
+            google_power: this.googlePower,
+            bing_power: this.bingPower,
+            baidu_power: this.baiduPower,
+            yahoo_power: this.yahooPower,
+            ddg_power: this.ddgPower,
+          }).then(async (res) => {
+            if (res.data.success) {
+              this.isGenerating = false;
+              this.messages.push({ text: res.data.response.result, ref_list: res.data.response.reference_links, isUser: false });
+              return;
+            } else {
+              return;
+            }
           })
         }
 
