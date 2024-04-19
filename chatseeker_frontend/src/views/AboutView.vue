@@ -19,8 +19,16 @@
                   <div class="message s-font-style" v-for="(message, index) in this.messages" :key="index" :class="{'user-message': message.isUser, 'bot-message': !message.isUser}">
                     <div class="message-content">{{ message.text }}</div>
                     <div v-if="message.ref_list && message.ref_list.length > 0">
-                        <a v-for="(link, linkIndex) in message.ref_list" :key="linkIndex" :href="link" target="_blank" rel="noopener noreferrer">{{ link }}</a>
+                      <div v-for="(ref_content, refIndex) in message.ref_list" :key="refIndex" style="display: flex; flex-direction: row;">
+                        <img :src="LinkIcon" alt="Link Icon"
+                        style="width: 30px; height: 30px; margin-top: 14px; margin-right: 5px; background: transparent">
+                        <p class="s-font-style" style="width: 85px; margin-right: 5px;">参考内容{{ refIndex + 1 }}: </p>
+                        <a :href="ref_content.link" target="_blank" rel="noopener noreferrer" style="word-wrap: break-word; overflow-wrap: break-word;  margin-top: 16px; ">{{ ref_content.title }}</a>
+                      </div>
                     </div>
+                    <img :src="PlayIcon" alt="Play Icon"
+                        style="width: 40px; height: 40px; margin-top: 15px; background: transparent" v-if="!message.isUser" @click="textToSpeech(message.text)">
+                    <audio id="audioPlayer" controls></audio>
                   </div>
                   <div v-if="this.isGenerating" class="message s-font-style bot-message">
                     <div class="message-content">正在思考...</div>
@@ -155,6 +163,8 @@
 // import { ref } from 'vue';
 import { request } from "../js/requestConfig";
 import NKULogo from "@/assets/img/NKU_Logo.png";
+import LinkIcon from "@/assets/img/link_icon.png";
+import PlayIcon from "@/assets/img/play_icon.png";
 import CleanIcon from "@/assets/img/clean_icon.svg";
 import SendIcon from "@/assets/img/send_icon.svg";
 import GoogleLogo from "@/assets/img/Google_Logo.png";
@@ -169,6 +179,8 @@ export default {
     data: () => {
       return {
         NKULogo,
+        LinkIcon,
+        PlayIcon,
         CleanIcon,
         SendIcon,
         GoogleLogo,
@@ -207,6 +219,16 @@ export default {
       toggleRealTime() {
         this.isRealTime = !this.isRealTime;
         this.$emit('change', this.isRealTime);
+      },
+
+      async textToSpeech(text){
+        await fetch(`http://127.0.0.1/chat-seeker-backend/audio_gen/text_to_speech?reply=${text}`).then(response => {
+          const audioBlob = response.blob();
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audioPlayer = document.getElementById('audioPlayer');
+          audioPlayer.src = audioUrl;
+          audioPlayer.play();
+        })
       },
       async generate(){
         if(this.isRealTime){
@@ -275,7 +297,7 @@ export default {
           }).then(async (res) => {
             if (res.data.success) {
               this.isGenerating = false;
-              this.messages.push({ text: res.data.response.result, ref_list: res.data.response.reference_links, isUser: false });
+              this.messages.push({ text: res.data.response.result, ref_list: res.data.response.reference_data, isUser: false });
               return;
             } else {
               return;
@@ -386,7 +408,8 @@ export default {
     margin-bottom: 10px;
 
     .message {
-      max-width: 200px;
+      /* width: 400px; */
+      max-width: 600px;
       width: fit-content;
       margin-bottom: 10px;
       border-radius: 15px;
