@@ -1,66 +1,42 @@
 <template>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap">
   <div class='totalBlock'>
-    <div class="topPanel" @click="this.$router.push('/');" style="position: absolute; top: 0px;">
-      <div style="display: flex; flex-direction: row; justify-content: flex-start; margin-left: 20px; margin-top: 20px;">
-        <img :src="CpiiLogo" alt="CPII Logo" style="display: inline-block; height: 30px; width: 28.125px; margin-top: -1px;">
-        <p style="color: #091E42; font-family: Inter; font-size: 18px; font-style: normal; font-weight: 400; line-height: 28px; letter-spacing: 0.72px; width: 156px; margin-left: 10px;">CPII Tool Store</p>
+    <div class="topPanel" @click="this.$router.push('/');">
+      <div style="display: flex; flex-direction: row; justify-content: flex-start; padding-left: 20px; padding-top: 0px;">
+        <img :src="NKULogo" alt="NKU Logo" style="display: inline-block; height: 40px; width: 40px; padding-top: 13px; padding-right: 5px;">
+        <p style="color: #091E42; font-family: Inter; font-size: 18px; font-style: normal; font-weight: 400; line-height: 28px; letter-spacing: 0.72px; width: 156px; margin-left: 10px;">Chat Seeker</p>
       </div>
     </div>
 
-    <div style="top: 111px; border-radius: 10px; border: 1px solid var(--color-light-grey-3, #DFE1E6); width: 544px; height: 600px; display: flex; flex-direction: column; padding: 30px; background-color: linear-gradient(0deg, var(--color-lightest-grey, rgba(250, 251, 252, 0.82)) 0%, var(--color-lightest-grey, rgba(250, 251, 252, 0.82)) 100%), var(--color-white, #FFF); margin: 0 auto;">
+    <div class="signUpDiv" style="margin-top: 50px;">
       <div class="signUpTitle">
         <p style="padding-left: 15px; padding-top: 40px; font-weight: bolder; color: var(--color-default, #172B4D); font-family: Inter; font-size: 32px; font-style: normal; font-weight: 700; line-height: 40px;">Sign up</p>
-        <p style="padding-left: 195px; padding-top: 20px; height: 24px; color: var(--color-brand, #0052CC); text-align: right; font-family: Inter; font-size: 16px; font-style: normal; font-weight: 400; line-height: 24px; letter-spacing: 0.32px; text-decoration: underline;" @click="this.$router.push('/LoginPage')">I have an account</p>
+        <p style="padding-left: 195px; padding-top: 40px; height: 24px; color: var(--color-brand, #0052CC); text-align: right; font-family: Inter; font-size: 16px; font-style: normal; font-weight: 400; line-height: 24px; letter-spacing: 0.32px; text-decoration: underline;" @click="this.$router.push('/LoginPage')">I have an account</p>
       </div>
       <div class="signUpField">
         <input class="input" placeholder="E-mail" style="margin-bottom: 15px;" v-model="email" type="email" @keydown.enter="handleEnter" :style="{ color: email === '' ? colors['grey'] : colors['black'] }">
         <input class="input" placeholder="Password" style="margin-bottom: 15px;" v-model="password" type="password" @keydown.enter='handleEnter' :style="{ color: password === '' ? colors['grey'] : colors['black'] }">
         <input class="input" placeholder="Confirm Password" style="margin-bottom: 15px;" v-model="confirmPassword" type="password" @keydown.enter='handleEnter' :style="{ color: confirmPassword === '' ? colors['grey'] : colors['black'] }">
-        <input class="input" placeholder="Organization Code" v-model="organizationCode" @keydown.enter='register' :style="{ color: password === '' ? colors['grey'] : colors['black'] }">
         <button class="registerBtn" style="margin-top: 40px;" @click="register">Get Started</button>
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
 import {request} from "../js/requestConfig";
 import {mapActions} from "vuex";
+import NKULogo from "@/assets/img/NKU_Logo.png";
 
 export default {
   name: "RegisterPage",
-  created() {
-    this.$store.commit('hideSidenav')
-  },
-  mounted(){
-    if(localStorage.getItem('token')){
-      request('post', '/mongodb/check_login_status', {}, {
-        token: localStorage.getItem('token'),
-      }).then((res) => {
-        if(res.data.success){
-          this.$router.push('/HomePage');
-        }else{
-          console.log('Token is expired.');
-          this.$store.commit('hideSidenav');
-          this.$store.state.isLogIn = false;
-          this.$store.state.userId = '';
-          localStorage.removeItem('token');
-          localStorage.setItem('isRefreshed', 'false');
-          localStorage.removeItem('userStatus');
-          localStorage.removeItem('tools');
-          clearInterval(this.$store.state.checkTokenInterval);
-        }
-      })
-    }
-  },
   data(){
     return{
+      NKULogo,
       email:'',
       password:'',
       confirmPassword:'',
-      organizationCode:'',
-
       colors: {
         'grey': '#C1C7D0',
         'black': '#000000'
@@ -187,20 +163,30 @@ export default {
 .totalBlock{
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
-  justify-content: center;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  background: #FAFBFD;
 }
 .topPanel{
-    display: flex;
-    flex-direction: row;
-    height: 66px;
-    width: 100%;
-    padding: 16px 30px;
-    justify-content: space-between;
-    align-items: center;
-    align-self: stretch;
-    vertical-align: middle;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: 16px 30px;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+  vertical-align: middle;
+}
+.signUpDiv{
+  padding: 30px; 
+  height: 600px; 
+  border-radius: 10px; 
+  border: 1px solid var(--color-light-grey-3, #DFE1E6); 
+  display: flex; 
+  flex-direction: column; 
+  background-color: linear-gradient(0deg, var(--color-lightest-grey, rgba(250, 251, 252, 0.82)) 0%, var(--color-lightest-grey, rgba(250, 251, 252, 0.82)) 100%), var(--color-white, #FFF); 
+  margin: 0 auto;
 }
 .signUpTitle{
   align-items: center;
@@ -216,6 +202,7 @@ export default {
   width: 100%;
 }
 .input{
+  font-family: Inter;
   display: flex;
   padding: 15px 20px;
   align-items: center;
@@ -223,11 +210,11 @@ export default {
   align-self: stretch;
   border-radius: 5px;
   border: 0.5px solid var(--cpii-tool-store-dark-grey-4, #979eaa);
-  width: 448px; 
+  width: 408px; 
   height: 58px;
 }
 .registerBtn{
-  width: 448px;
+  width: 408px;
   height: 58px;
   border-radius: 5px; 
   text-transform: none; 

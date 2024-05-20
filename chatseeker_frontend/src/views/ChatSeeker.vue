@@ -5,7 +5,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap">
   <div class="totalBlock">
       <div style="width: 100%; display: flex; flex-direction: row;">
-
           <div class="leftPart">
             <div class="topBar">
                 <p style="margin-top: 20px; color: var(--cpii-tool-store-dark-grey-4, #172B4D);" class="font-style">Chat Seeker</p>
@@ -20,7 +19,7 @@
                   <div class="message-content">{{ message.text }}</div>
                   <div v-if="message.ref_list && message.ref_list.length > 0">
                     <div v-for="(ref_content, refIndex) in message.ref_list" :key="refIndex" style="display: flex; flex-direction: row;">
-                      <img :src="LinkIcon" alt="Link Icon"
+                      <img :src="LinkIcon" alt="Link Icon" 
                       style="width: 30px; height: 30px; margin-top: 14px; margin-right: 5px; background: transparent">
                       <p class="s-font-style" style="width: 85px; margin-right: 5px;">参考内容{{ refIndex + 1 }}: </p>
                       <a :href="ref_content.link" target="_blank" rel="noopener noreferrer" style="word-wrap: break-word; overflow-wrap: break-word;  margin-top: 16px; ">{{ ref_content.title }}</a>
@@ -50,24 +49,26 @@
 
           <div class="rightPart">
             <p class="noto-serif-sc-regular" style="font-size: 28px; margin-left: 20px; margin-top: 15px;">聊天机器人设置</p>
-            <div style="margin-top: 10px; width: 100%; display: flex; flex-direction: row; align-items: center;">
-              <div style="width: 50%; display: flex; flex-direction: row; align-items: center;">
-                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">多轮对话</p>
-                <div class="toggle-switch" :class="{ 'active': this.isMulti }" @click="toggleMulti" style="margin-left: 10px; margin-top: 5px;">
-                  <div class="toggle-circle"></div>
-                </div>
-              </div>
 
-              <div style="width: 50%; display: flex; flex-direction: row; align-items: center;">
-                <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 20px; margin-right: 0;">流式输出</p>
-                <div class="toggle-switch" :class="{ 'active': this.isStreaming }" @click="toggleStreaming" style="margin-left: 10px; margin-top: 5px;">
-                  <div class="toggle-circle"></div>
-                </div>
+            <div style="width: 50%; display: flex; flex-direction: row; align-items: center;">
+              <img :src="InfoIcon" alt="Info Icon" style="margin-left: 30px; width: 15px; height: 15px; margin-top: 0.5px;" @click="scrollToRecord" class="info-icon" title="多轮对话是机器人根据上下文内容，进行连续的人机对话。">
+              <p class="noto-serif-sc-regular" style="font-size: 16px; margin-right: 0; margin-left: 5px;">多轮对话</p>
+              <div class="toggle-switch" :class="{ 'active': this.isMulti }" @click="toggleMulti" style="margin-left: 10px; margin-top: 5px;">
+                <div class="toggle-circle"></div>
+              </div>
+            </div>
+
+            <div style="margin-top: 50px; width: 50%; display: flex; flex-direction: row; align-items: center;">
+              <img :src="InfoIcon" alt="Info Icon" style="margin-left: 30px; width: 15px; height: 15px; margin-top: 0.5px;" @click="scrollToRecord">
+              <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 5px; margin-right: 0;">流式输出</p>
+              <div class="toggle-switch" :class="{ 'active': this.isStreaming }" @click="toggleStreaming" style="margin-left: 10px; margin-top: 5px;">
+                <div class="toggle-circle"></div>
               </div>
             </div>
             
             <div style="margin-top: 50px; width: 100%; display: flex; flex-direction: row; align-items: center;">
-              <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 40px; margin-right: 0;">实时搜索</p>
+              <img :src="InfoIcon" alt="Info Icon" style="margin-left: 30px; width: 15px; height: 15px; margin-top: 0.5px;" @click="scrollToRecord">
+              <p class="noto-serif-sc-regular" style="font-size: 16px; margin-left: 5px; margin-right: 0;">实时搜索</p>
               <div class="toggle-switch" :class="{ 'active': this.isRealTime }" @click="toggleRealTime" style="margin-left: 10px; margin-top: 5px;">
                 <div class="toggle-circle"></div>
               </div>
@@ -137,7 +138,7 @@
               </div>
             </div>
 
-            <div style="margin-top: 20px; width: 100%; display: flex; flex-direction: column;">
+            <!-- <div style="margin-top: 20px; width: 100%; display: flex; flex-direction: column;">
               <p style="color: var(--cpii-tool-store-dark-grey-4, #172B4D); margin-bottom: 8px; margin-left: 40px;" class="font-style">
                 Temperature</p>
               <div class="temperature-control">
@@ -153,7 +154,7 @@
                 <input class="temperature-slider" type="range" min="0" max="1" step="0.01" v-model="topp">
                 <span class="temperature-value font-style">{{ topp }}</span>
               </div>
-            </div>
+            </div> -->
           </div>
       </div>
   </div>
@@ -167,6 +168,7 @@ import LinkIcon from "@/assets/img/link_icon.png";
 import PlayIcon from "@/assets/img/play_icon.png";
 import CleanIcon from "@/assets/img/clean_icon.svg";
 import SendIcon from "@/assets/img/send_icon.svg";
+import InfoIcon from "@/assets/img/info.png";
 import GoogleLogo from "@/assets/img/Google_Logo.png";
 import BingLogo from "@/assets/img/Bing_Logo.png";
 import BaiduLogo from "@/assets/img/Baidu_Logo.png";
@@ -183,6 +185,7 @@ export default {
       PlayIcon,
       CleanIcon,
       SendIcon,
+      InfoIcon,
       GoogleLogo,
       BingLogo,
       BaiduLogo,
@@ -646,4 +649,14 @@ font-family: "Ma Shan Zheng", cursive;
 font-weight: 400;
 font-style: normal;
 }
+
+.tooltip {
+    transition: visibility 0.2s, opacity 0.2s linear;
+    opacity: 0;
+}
+
+.info-icon:hover + .tooltip {
+    visibility: visible;
+}
+
 </style>

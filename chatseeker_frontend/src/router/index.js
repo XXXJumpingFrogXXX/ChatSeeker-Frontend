@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import ChatSeeker from '@/views/ChatSeeker.vue'
 import RegisterView from '@/views/RegisterView.vue'
+import UserManagementView from '@/views/UserManagement.vue'
+import SystemSetView from '@/views/SystemSet.vue'
 
 
 const routes = [
@@ -19,7 +21,17 @@ const routes = [
     path: '/chat',
     name: 'ChatSeeker',
     component: ChatSeeker,
-  }
+  },
+  {
+    path: '/user',
+    name: 'UserManagement',
+    component: UserManagementView,
+  },
+  {
+    path: '/system',
+    name: 'SystemSetting',
+    component: SystemSetView,
+  },
 ]
 
 const router = createRouter({
